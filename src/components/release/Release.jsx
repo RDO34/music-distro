@@ -12,14 +12,17 @@ const Container = styled.div`
 `;
 
 export const Release = ({ cover, title, index }) => {
-  const { isTransitioning, context, send } = useContext(ReactContext);
+  const { isTransitioning, context, send, debounce } = useContext(ReactContext);
 
   const onClick = () => {
-    if (index !== context.currentIndex && !isTransitioning) {
-      send(SELECT, { index });
-    } else {
-      send(VIEW);
-      setTimeout(() => scrollToDetails(), 100);
+    if (!isTransitioning) {
+      if (index !== context.currentIndex) {
+        debounce();
+        send(SELECT, { index });
+      } else {
+        send(VIEW);
+        setTimeout(() => scrollToDetails(), 100);
+      }
     }
   };
 
