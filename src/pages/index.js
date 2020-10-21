@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useMachine } from '@xstate/react';
 
-import { Release, Layout, Carousel } from '../components';
+import { Release, Carousel, Details } from '../components';
 import { ContextProvider } from '../context';
+import { stateMachine } from '../machines/state-machine';
 
 const items = [
   {
@@ -19,11 +21,13 @@ const items = [
 ];
 
 export default () => {
-  const [idx, setIdx] = useState(0);
+  const [state, send] = useMachine(stateMachine);
+  const { context, value } = state;
   const [isTransitioning, setIsTransitioning] = useState(false);
+
   const slides = items.map(({ coverImage, title }, index) => ({
     key: title,
-    content: <Release cover={coverImage} title={title} currentIdx={index} />
+    content: <Release cover={coverImage} title={title} index={index} />
   }));
 
   const debounce = () => {
@@ -32,10 +36,9 @@ export default () => {
   };
 
   return (
-    <ContextProvider value={{ idx, setIdx, isTransitioning, debounce }}>
-      <Layout>
-        <Carousel items={slides} />
-      </Layout>
+    <ContextProvider value={{ isTransitioning, debounce, send, state: value, context }}>
+      <Carousel items={slides} />
+      {state.matches('viewing') && <Details />}
     </ContextProvider>
   );
 };

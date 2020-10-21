@@ -1,4 +1,4 @@
 import { createContext } from 'react';
 
-export const Context = createContext();
-export const { Provider: ContextProvider } = Context;
+export const ReactContext = createContext();
+export const { Provider: ContextProvider } = ReactContext;
